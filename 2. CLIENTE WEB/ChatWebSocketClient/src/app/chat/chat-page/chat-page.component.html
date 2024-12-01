@@ -46,27 +46,36 @@
         </div>
         <div class="flex flex-col overflow-y-auto" style="max-height: 250px;">
             <div *ngFor="let chatRoom of chatRooms" class="mx-4">
-                <a
+                <div
                     class="text-white mb-2 opacity-80 hover:opacity-90
                              cursor-pointer capitalize font-semibold px-3 py-2 w-full rounded-lg
-                             hover:bg-white hover:bg-opacity-5
                              transition duration-200 ease-in-out
                              justify-between items-center gap-3 align-items-center
-                             block text-nowrap overflow-hidden whitespace-nowrap
-                             max-w-100
+                             text-nowrap overflow-hidden whitespace-nowrap
+                             max-w-100 flex flex-row
                              "
-                    [ngClass]="{ 'bg-black bg-opacity-25': chatRoom.id === selectedChatRoom?.id }"
-                    (click)="selectChatRoom(chatRoom)">
+                    [ngClass]="{ 'bg-black bg-opacity-25': chatRoom.id === selectedChatRoom?.id }">
                     <span>
                         {{ chatRoom.name }}
                     </span>
+                    <div class="flex flex-row gap-1 cursor-pointer block p-1 ml-auto text-center bg-black bg-opacity-30 rounded-sm">
+                        @if (selectedChatRoom && selectedChatRoom.id === chatRoom.id) {
+                            <a title="Salir del chat" class="cursor-pointer block p-1 ml-auto text-center" style="width: 30px;" (click)="exitCurrentChatRoom()">
+                                <fa-icon [icon]="'sign-out'" class="text-red-500 text-opacity-80"></fa-icon>
+                            </a>
+                        } @else {
+                            <a title="Entrar al chat" class="cursor-pointer block p-1 ml-auto text-center" style="width: 30px;" (click)="selectChatRoom(chatRoom, true)">
+                                <fa-icon [icon]="'chevron-right'" class="text-white text-opacity-80"></fa-icon>
+                            </a>
+                        }
+                    </div>
 
                     @if (unreadChannelMessages[chatRoom.id!] !== undefined && unreadChannelMessages[chatRoom.id!] > 0) {
                         <span class="text-white text-sm ml-2 bg-red-500 px-1 rounded-full" style="padding: 0.05em 0.55em">
                             {{ unreadChannelMessages[chatRoom.id!] }}
                         </span>
                     }
-                </a>
+                </div>
             </div>
         </div>
     </section>
@@ -117,20 +126,11 @@
 </aside>
 
 <main class="chat-wrapper relative">
-    <div class="header flex justify-between items-center bg-black bg-opacity-25 px-5 py-3">
-        <!-- Descripción de la sala -->
-        <p class="text-white m-0 flex-grow">
-            {{ selectedChatRoom?.description || 'Selecciona una sala' }}
+    <div class="header flex justify-between items-center bg-black bg-opacity-25 px-5">
+        <p class="text-white m-0">
+            {{ selectedChatRoom?.description }}
         </p>
-    
-        <!-- Botón de salir de la sala -->
-        <button
-            *ngIf="selectedChatRoom && currentUser"
-            class="bg-blue-500 text-white px-4 py-2 rounded-lg font-bold hover:bg-red-600 transition duration-200 ease-in-out"
-            (click)="exitChatRoomEleccion(selectedChatRoom.id!)">
-            Abandonar de la sala
-        </button>
-    </div>    
+    </div>
 
     <div #chatContainer class="chat-messages">
         <div class="chat-message py-3" *ngFor="let message of receivedMessages" [ngClass]="{
@@ -177,32 +177,34 @@
     </div>
 
     @if (currentUser) {
-        <div class="chat-input flex justify-between items-center bg-black bg-opacity-25 px-5 py-3 mt-auto">
-            <textarea
-                class="w-full bg-transparent text-white text-opacity-80 p-3 border-none max-h-52"
-                pInputTextarea
-                #messageInput
-                rows="1"
-                maxlength="1000"
-                placeholder="Escribe un mensaje..."
-                [(ngModel)]="message"
-                (keyup.enter)="sendMessage()"
-                [disabled]="!currentUser"
-                [autoResize]="true"
-            ></textarea>
-            <button
-                class="
-                    bg-blue-500 text-white px-3 py-2 rounded-sm font-bold
-                    hover:bg-blue-600 transition duration-200 ease-in-out border-none
-                    cursor-pointer self-end
-                "
-                [ngClass]="{ 'opacity-50': !currentUser }"
-                (click)="sendMessage()"
-                [disabled]="!currentUser"
-            >
-                Enviar
-            </button>
-        </div>
+        @if (selectedChatRoom) {
+            <div class="chat-input flex justify-between items-center bg-black bg-opacity-25 px-5 py-3 mt-auto">
+                <textarea
+                    class="w-full bg-transparent text-white text-opacity-80 p-3 border-none max-h-52"
+                    pInputTextarea
+                    #messageInput
+                    rows="1"
+                    maxlength="1000"
+                    placeholder="Escribe un mensaje..."
+                    [(ngModel)]="message"
+                    (keyup.enter)="sendMessage()"
+                    [disabled]="!currentUser"
+                    [autoResize]="true"
+                ></textarea>
+                <button
+                    class="
+                        bg-blue-500 text-white px-3 py-2 rounded-sm font-bold
+                        hover:bg-blue-600 transition duration-200 ease-in-out border-none
+                        cursor-pointer self-end
+                    "
+                    [ngClass]="{ 'opacity-50': !currentUser }"
+                    (click)="sendMessage()"
+                    [disabled]="!currentUser"
+                >
+                    Enviar
+                </button>
+            </div>
+        }
     } @else {
         <div class="text-white text-opacity-80 bg-black bg-opacity-20 px-4 py-2 rounded-sm font-bold m-4 flex flex-row gap-5 align-items-center items-center">
             <fa-icon
@@ -221,6 +223,23 @@
     (onLoggedIn)="onLoggedIn($event)"
     (onSignedUp)="onSignedUp($event)"
 ></auth-modal>
+
+<p-dialog
+    header="Confirmar acción"
+    [(visible)]="confirmEnterChatModalIsVisible"
+    [modal]="true"
+    [breakpoints]="{ '80vw': '75vw', '575px': '90vw' }"
+    [style]="{ width: '50vw' }"
+    [draggable]="false"
+    [resizable]="false">
+    <div class="flex flex-col align-items-center gap-3 mb-3">
+        <p>¿Estás seguro de que deseas entrar a esta sala de chat?</p>
+    </div>
+    <div class="flex align-items-end justify-end gap-2">
+        <p-button label="Cancelar" (click)="confirmEnterChatModalIsVisible = false" />
+        <p-button label="Aceptar" (click)="selectChatRoom(lastConfirmedChatRoom!)" />
+    </div>
+</p-dialog>
 
 <p-dialog
     header="Crear sala de chat"

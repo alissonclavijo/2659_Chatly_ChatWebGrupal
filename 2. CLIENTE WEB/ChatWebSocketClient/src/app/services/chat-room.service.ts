@@ -9,7 +9,6 @@ import { ChatMessageModel } from '@app/models/chat-message.model';
     providedIn: 'root'
 })
 export class ChatRoomService {
-    private apiUrl = '/localhost:8005'; 
     constructor(private httpClient: HttpClient) {}
 
     getChatRooms(): Observable<ChatRoomModel[]> {
@@ -23,10 +22,4 @@ export class ChatRoomService {
     createChatRoom(chatRoom: ChatRoomModel): Observable<ChatRoomModel> {
         return this.httpClient.post<ChatRoomModel>(`${environment.apiEndpoint}/api/chat-rooms`, chatRoom);
     }
-
-    exitRoom(roomId: number, userId: number): Observable<string> {
-        const url = `${environment.apiEndpoint}/api/chatrooms/${roomId}/exit?userId=${userId}`;
-        return this.httpClient.delete<string>(url); // Elimina la sala correctamente
-    }
-    
 }

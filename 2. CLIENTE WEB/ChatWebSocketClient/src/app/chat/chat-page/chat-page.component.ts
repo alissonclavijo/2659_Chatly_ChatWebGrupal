@@ -53,9 +53,6 @@ import { InputTextModule } from 'primeng/inputtext';
     ]
 })
 export class ChatPageComponent implements OnInit {
-exitChatRoom(arg0: number|undefined) {
-throw new Error('Method not implemented.');
-}
     currentUser: UserModel | null = null;
     receivedMessages: ChatMessageModel[] = [];
     chatRooms: ChatRoomModel[] = [];
@@ -80,6 +77,8 @@ throw new Error('Method not implemented.');
     totalOnlineUsers: number = 0;
     firstUnredMessage: ChatMessageModel | null = null;
     chatRoomModalIsVisible: boolean = false;
+    confirmEnterChatModalIsVisible: boolean = false;
+    lastConfirmedChatRoom: ChatRoomModel | null = null;
     chatRoomForm: FormGroup = new FormGroup({
         name: new FormControl('', [Validators.required]),
         description: new FormControl('', [Validators.required])
@@ -112,10 +111,6 @@ throw new Error('Method not implemented.');
 
             for (const chatRoom of chatRooms) {
                 this.unreadChannelMessages[chatRoom.id!] = 0;
-            }
-
-            if (chatRooms.length > 0) {
-                this.selectChatRoom(chatRooms[0]);
             }
         });
 
@@ -233,8 +228,21 @@ throw new Error('Method not implemented.');
         this.scrollChatToBottom();
     }
 
-    selectChatRoom(chatRoom: ChatRoomModel): void {
+    exitCurrentChatRoom(): void {
+        this.selectedChatRoom = null;
+        this.receivedMessages = [];
+    }
+
+    selectChatRoom(chatRoom: ChatRoomModel, confirm: boolean = false): void {
+        if (confirm) {
+            this.lastConfirmedChatRoom = chatRoom;
+            this.confirmEnterChatModalIsVisible = true;
+            return;
+        }
+
+        this.lastConfirmedChatRoom = null;
         this.selectedChatRoom = chatRoom;
+        this.confirmEnterChatModalIsVisible = false;
         this.subcribeToChatRoom(chatRoom.id!);
         this.chatRoomService.getChatMessages(chatRoom.id!).subscribe((messages) => {
             this.receivedMessages = messages;
@@ -311,10 +319,6 @@ throw new Error('Method not implemented.');
             for (const chatRoom of chatRooms) {
                 this.unreadChannelMessages[chatRoom.id!] = 0;
             }
-
-            if (chatRooms.length > 0) {
-                this.selectChatRoom(chatRooms[0]);
-            }
         });
 
         return observable;
@@ -373,7 +377,6 @@ throw new Error('Method not implemented.');
         this.totalOnlineUsers = this.connections.filter((c) => c.preferences?.status === UserStatus.ONLINE).length;
     }
 
-
     @HostListener('document:visibilitychange', ['$event'])
     onVisibilityChange(event: Event) {
         this.notificationService.setDocumentVisibility(document.visibilityState);
@@ -403,26 +406,4 @@ throw new Error('Method not implemented.');
             }, 5000);
         }
     }
-
-
-    exitChatRoomEleccion(roomId: number): void {
-        if (!this.currentUser) return;
-    
-        const userId = this.currentUser.id; // Asegúrate de que `currentUser` tenga un ID válido
-    
-        this.chatRoomService.exitRoom(roomId, userId).subscribe({
-            next: (response) => {
-                console.log(response);
-                this.toastService.showSuccess('Sala abandonada', 'Has salido de la sala exitosamente.');
-                this.selectedChatRoom = null; // Deselect sala actual
-                this.loadChatRooms(); // Vuelve a cargar las salas disponibles
-            },
-            error: (err) => {
-                console.error('Error al abandonar la sala:', err);
-                this.toastService.showError('Error', 'No se pudo abandonar la sala.');
-            }
-        });
-    }
-
-    
 }

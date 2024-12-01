@@ -4,4 +4,3 @@ export interface ChatRoomModel {
     description: string;
     createdAt?: Date;
 }
-

@@ -122,15 +122,3 @@ img.emoji {
         }
     }
 }
-
-main {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-}
-
-.chat-messages {
-    flex-grow: 1;
-    overflow-y: auto;
-}
-
