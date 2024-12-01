@@ -9,4 +9,3 @@ public class ChatWebsocketServerApplication {
         SpringApplication.run(ChatWebsocketServerApplication.class, args);
     }
 }
-

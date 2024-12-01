@@ -8,7 +8,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
-import java.util.List;
 
 @Entity
 @Data
@@ -29,12 +28,4 @@ public class ChatRoom {
 
     @Builder.Default
     private Date createdAt = new Date();
-
-    @ManyToMany
-    @JoinTable(
-            name = "chatroom_users",
-            joinColumns = @JoinColumn(name = "chatroom_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id")
-    )
-    private List<User> users; // Relación con los usuarios en la sala
 }
