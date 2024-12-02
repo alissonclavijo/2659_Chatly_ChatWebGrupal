@@ -37,7 +37,10 @@
 
     <section class="mb-3 border-b-white border-b-1">
         <!-- tailwind title style -->
-        <div class="flex flex-row  text-white mx-5 my-5">
+        <h1 class="text-lg font-semibold m-0 p-0" style="text-align: center;"> _________________________________________</h1>
+        <h1 class="text-lg font-semibold m-0 p-0" style="text-align: center;"> CHATLY - Chat Web Grupal</h1>
+        <h1 class="text-lg font-semibold m-0 p-0" style="text-align: center;"> _________________________________________</h1>
+        <div class="flex flex-row  text-white mx-5 my-5">  
             <h1 class="text-lg font-semibold m-0 p-0">Salas de chat ({{ chatRooms.length }})</h1>
             @if (currentUser && currentUser.role === 'ADMIN') {
                 <fa-icon [icon]="'plus-circle'" class="text-white text-opacity-80 text-2xl ml-auto cursor-pointer"
@@ -80,6 +83,7 @@
         </div>
     </section>
     <section>
+        <h1 class="text-lg font-semibold m-0 p-0" style="text-align: center;"> _________________________________________</h1>
         <h1 class="text-lg font-semibold text-white mx-5">
             Usuarios conectados ({{ totalOnlineUsers }})
         </h1>
@@ -211,7 +215,7 @@
                 [icon]="'exclamation-triangle'"
                 class="text-white text-opacity-80 text-3xl"
             ></fa-icon>
-            <p>Debes <a class="text-white cursor-pointer" (click)="showLoginModal()">iniciar sesión</a> para enviar mensajes</p>
+            <p>Debes <a class="text-white cursor-pointer" (click)="showLoginModal()">iniciar sesión</a> para enviar mensajes dentro de CHATLY</p>
         </div>
     }
 </main>
