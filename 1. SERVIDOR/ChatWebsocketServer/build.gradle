@@ -9,7 +9,7 @@ version = '0.0.1-SNAPSHOT'
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
+        languageVersion = JavaLanguageVersion.of(17) // Configuración de Java 17
     }
 }
 
@@ -20,31 +20,41 @@ configurations {
 }
 
 repositories {
-    mavenCentral()
+    mavenCentral() // Repositorio de Maven Central
 }
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
-    implementation 'org.springframework.boot:spring-boot-starter-websocket'
-    implementation 'org.springframework.boot:spring-boot-starter-security'
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    // Dependencias principales de Spring Boot
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa' // JPA
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc' // JDBC
+    implementation 'org.springframework.boot:spring-boot-starter-websocket' // WebSockets
+    implementation 'org.springframework.boot:spring-boot-starter-security' // Seguridad
+    implementation 'org.springframework.boot:spring-boot-starter-validation' // Validación
 
-    implementation 'org.springframework.security:spring-security-messaging'
-    implementation 'org.springframework.security:spring-security-config'
-    implementation 'org.commonmark:commonmark:0.22.0'
+    // Control de versiones de base de datos
+    implementation 'org.liquibase:liquibase-core' // Liquibase para control de esquema
 
-    implementation 'com.auth0:java-jwt:4.4.0'
+    // Dependencias para JWT
+    implementation 'com.auth0:java-jwt:4.4.0' // Manejo de JSON Web Tokens (JWT)
 
-    implementation 'org.liquibase:liquibase-core'
-    compileOnly 'org.projectlombok:lombok'
-    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    // Dependencias para Markdown con CommonMark
+    implementation 'org.commonmark:commonmark:0.22.0' // Núcleo de CommonMark
+    implementation 'org.commonmark:commonmark-ext-gfm-tables:0.22.0' // Extensión para tablas
+    implementation 'org.commonmark:commonmark-ext-autolink:0.22.0' // Extensión para autolinks
+    implementation 'org.commonmark:commonmark-ext-heading-anchor:0.22.0' // Extensión para anclajes en encabezados
+
+    // Driver para PostgreSQL
     runtimeOnly 'org.postgresql:postgresql'
+
+    // Lombok para simplificar código (Getters, Setters, etc.)
+    compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    // Dependencias para pruebas con JUnit
+    testImplementation 'org.springframework.boot:spring-boot-starter-test' // JUnit y Mockito
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher' // Lanzador para JUnit
 }
 
 tasks.named('test') {
-    useJUnitPlatform()
+    useJUnitPlatform() // Configurar JUnit Platform como motor de pruebas
 }
